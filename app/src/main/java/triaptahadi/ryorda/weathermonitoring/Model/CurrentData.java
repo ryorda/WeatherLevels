@@ -27,7 +27,7 @@ public class CurrentData {
         return cityName;
     }
 
-    public String getWeatherName() {
+    public String getWeatherStatus() {
         return weatherDesc;
     }
 
