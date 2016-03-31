@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="triaptahadi.ryorda.weathermonitoring.View.ListWeather">
+    <item
+        android:id="@+id/refresh_list"
+        android:icon="@drawable/refresh_icon"
+        android:title="Refresh"
+        app:showAsAction="ifRoom" />
+</menu>

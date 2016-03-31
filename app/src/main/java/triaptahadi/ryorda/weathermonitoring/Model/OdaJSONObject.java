@@ -20,10 +20,14 @@ public class OdaJSONObject {
         Stack<Character> balancing = new Stack<>();
         json = json.substring(1, json.length() - 1);
 
+        boolean insideString = false;
         int pos = 0;
         for (int i = 0; i < json.length(); i++) {
             char c = json.charAt(i);
             switch (c) {
+                case '"':
+                    insideString = !insideString;
+                    break;
                 case '[':
                 case '{':
                     balancing.push(c);
@@ -37,7 +41,7 @@ public class OdaJSONObject {
                         throw new Exception("Invalid json syntax : " + json);
                     break;
                 case ',':
-                    if (balancing.isEmpty()) {
+                    if (balancing.isEmpty() && !insideString) {
                         saveData(json.substring(pos, i));
                         pos = i + 1;
                     }

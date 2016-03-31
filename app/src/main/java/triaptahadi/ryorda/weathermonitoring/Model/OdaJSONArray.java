@@ -6,8 +6,8 @@ import java.util.Stack;
  * Created by ryord on 3/30/2016.
  */
 public class OdaJSONArray {
-    String[] values;
     final int MAX_VAL = 1_000_000;
+    String[] values;
 
     public OdaJSONArray(String json) throws Exception {
 
@@ -22,9 +22,14 @@ public class OdaJSONArray {
 
         int pos = 0;
         int idx = 0;
+        boolean insideString = false;
+
         for (int i = 0; i < json.length(); i++) {
             char c = json.charAt(i);
             switch (c) {
+                case '"':
+                    insideString = !insideString;
+                    break;
                 case '[':
                 case '{':
                     balancing.push(c);
@@ -38,7 +43,7 @@ public class OdaJSONArray {
                         throw new Exception("Invalid json syntax : " + json);
                     break;
                 case ',':
-                    if (balancing.isEmpty()) {
+                    if (balancing.isEmpty() && !insideString) {
                         values[idx] = json.substring(pos, i).trim();
                         if (values[idx].charAt(0) == '"')
                             values[idx] = values[idx].substring(1, values[idx].length() - 1);
