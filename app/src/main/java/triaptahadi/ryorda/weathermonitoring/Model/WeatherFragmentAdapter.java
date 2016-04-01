@@ -14,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -23,14 +21,25 @@ import java.util.List;
 import triaptahadi.ryorda.weathermonitoring.R;
 
 /**
- * Created by ryord on 3/31/2016.
+ * @author Ryorda Triaptahadi
+ * A class which be the listview adapter of ListWeather.class
  */
 public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
+    /**
+     * @var c current context
+     * @var currentDatas list of CurrentData
+     * @var icon a bitmap variable which will be used in the listView
+     * @var pref the sharedpreferences
+     */
     Context c;
     List<CurrentData> currentDatas;
     Bitmap icon;
     SharedPreferences pref;
 
+    /**
+     * @param c    current context
+     * @param list list of CurrentData
+     */
     public WeatherFragmentAdapter(Context c, List<CurrentData> list) {
         super(c, android.R.layout.simple_list_item_1, list);
         this.c = c;
@@ -52,8 +61,8 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
 
         icon = null;
         final View v = convertView;
-        String path = pref.getString(item.getWeatherDesc(), null);
-        icon = loadImage(path, item.getWeatherDesc());
+        String path = pref.getString(item.getWeatherCode() + "", null);
+        icon = loadImage(path, item.getWeatherCode() + "");
 
         Thread imageThread = new Thread() {
             @Override
@@ -62,8 +71,10 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
                     InputStream in = new java.net.URL(item.getImageUrl()).openStream();
                     icon = BitmapFactory.decodeStream(in);
 
-                    pref.edit().putString(item.getWeatherDesc(), saveImage(icon, item.getWeatherDesc()));
-                    pref.edit().commit();
+                    String pathToFile = saveImage(icon, item.getWeatherCode() + "");
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString(item.getWeatherCode() + "", pathToFile);
+                    edit.commit();
 
                 } catch (Exception e) {
                     Log.e("Error", e.getMessage());
@@ -93,6 +104,12 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
         return convertView;
     }
 
+    /**
+     * A method for saving an image to an app folder
+     * @param bitmapImage the image file
+     * @param name name of file
+     * @return String of the app folder path containing the image
+     */
     private String saveImage(Bitmap bitmapImage, String name) {
         ContextWrapper cw = new ContextWrapper(c);
         File directory = cw.getDir("images", Context.MODE_PRIVATE);
@@ -101,7 +118,6 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
             bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
             fos.close();
@@ -112,12 +128,18 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
         return directory.getAbsolutePath();
     }
 
+    /**
+     * A method to load image from app folders
+     * @param path the app folder path
+     * @param name name of file
+     * @return Bitmap image decoded from the file, null if not exists
+     */
     private Bitmap loadImage(String path, String name) {
         try {
             File f = new File(path, name + ".jpg");
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
             return b;
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

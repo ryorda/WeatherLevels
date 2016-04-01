@@ -13,26 +13,36 @@ import triaptahadi.ryorda.weathermonitoring.Model.CurrentData;
 import triaptahadi.ryorda.weathermonitoring.Model.OdaJSONObject;
 
 /**
- * Created by ryord on 3/30/2016.
+ * @author Ryorda Triaptahadi
+ *         A class which is used to send request with World Weather Online API
  */
 public class WeatherAPI {
+    /**
+     * @var baseUrl the basic url of worldweatheronline API
+     * @var keyApi my key Api
+     * @var cities array of available cities
+     * @var currentIndex an index showing current city position in variable cities
+     */
     private final String baseUrl = "https://api.worldweatheronline.com/premium/v1/weather.ashx";
     private final String keyApi = "93792bfdeac147eab2835650163003";
     private final String cities[] = {
-            "Jakarta", "London"
+            "Jakarta", "London", "Singapore", "Kuala Lumpur", "Bandung",
+            "Johor", "Depok", "Jogjakarta", "Pontianak", "Palu",
+            "Manhattan", "Bangkok", "Taipei", "Manila", "Beijing",
+            "Washington", "New York", "Manchester", "Liverpool", "Dublin",
+            "Barcelona", "Sydney", "Hong Kong", "Padang", "Berlin",
+            "Johannesburg", "Hamburg", "Mecca", "Istanbul", "Rome",
+            "Melbourne", "Texas", "Seoul"
     };
-    //    private final String cities[] = {
-//            "Jakarta", "London", "Singapore", "Kuala Lumpur", "Bandung",
-//            "Johor", "Depok", "Jogjakarta", "Pontianak","Palu",
-//            "Manhattan", "Bangkok", "Taipei", "Manila", "Beijing",
-//            "Washington", "New York", "Manchester", "Liverpool", "Dublin",
-//            "Barcelona", "Sydney", "Hong Kong", "Padang", "Berlin",
-//            "Johannesburg", "Hamburg", "Mecca", "Istanbul", "Rome",
-//            "Melbourne", "Texas", "Seoul"
-//    };
     private int currentIndex;
     private CurrentData currentData;
 
+    /**
+     * Constructor
+     *
+     * @param s The name of city which becomes default city
+     * @throws Exception If the given city name is not supported or unavailable
+     */
     public WeatherAPI(String s) throws Exception {
         currentIndex = -1;
         for (int i = 0; i < cities.length; i++)
@@ -45,6 +55,11 @@ public class WeatherAPI {
             throw new Exception("Sorry your city is not available.");
     }
 
+    /**
+     * A method to get current weather information from this current city
+     *
+     * @return CurrentData weather information of the current city
+     */
     public CurrentData getCurrentData() {
 
         final String city_name = cities[currentIndex].replaceAll("\\s", "%20");
@@ -93,10 +108,18 @@ public class WeatherAPI {
         return currentData;
     }
 
+    /**
+     * A method to get weather information from all available cities
+     *
+     * @return List<CurrentData> list of current data of all cities
+     */
     public List<CurrentData> getAllCitiesData() {
-        ArrayList<CurrentData> data = new ArrayList<>();
-        CurrentData temp = currentData;
+        final ArrayList<CurrentData> data = new ArrayList<>();
+        Thread internetThread[] = new Thread[cities.length];
 
+        /*
+         * loop to get weather information of a city one by one
+         */
         for (int i = 0; i < cities.length; i++) {
             final String city_name = cities[i].replaceAll("\\s", "%20");
 
@@ -110,9 +133,13 @@ public class WeatherAPI {
             map.put("includelocation", "no");
 
 
-            Thread internetThread = new Thread() {
+            /*
+             * Thread for calling API
+             */
+            internetThread[i] = new Thread() {
                 @Override
                 public void run() {
+                    CurrentData temp;
                     try {
                         OdaJSONObject jsonObject = new OdaJSONObject(executeAPI(map));
                         String cityName = jsonObject.getJSONObject("data").getJSONArray("request").getJSONObject(0).getString("query");
@@ -126,30 +153,39 @@ public class WeatherAPI {
                         double windSpeed = jsonObject.getDouble("windspeedKmph");
                         String imageUrl = jsonObject.getJSONArray("weatherIconUrl").getJSONObject(0).getString("value");
 
-                        currentData = new CurrentData(cityName, weatherDesc, code, temper, humid, windSpeed, imageUrl);
+                        temp = new CurrentData(cityName, weatherDesc, code, temper, humid, windSpeed, imageUrl);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        currentData = null;
+                        temp = null;
                     }
+
+                    data.add(temp);
                 }
             };
 
-            internetThread.start();
-            try {
-                internetThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                internetThread.interrupt();
-            }
+            internetThread[i].start();
 
-            for (int j = 0; j < 17; j++)
-                data.add(currentData);
         }
-        currentData = temp;
+
+        /*
+         * loop to ensure each thread has stopped and the data have been added to list
+         */
+        for (int i = 0; i < cities.length; i++)
+            try {
+                internetThread[i].join();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         return data;
     }
 
+    /**
+     * A special method for calling the API directly
+     *
+     * @param map a map consisting attributes to be used in HTTP GET Method when calling the API
+     * @return String in JSON format
+     */
     private String executeAPI(Map<String, Object> map) {
         String link = baseUrl + "?key=" + keyApi;
         StringBuilder sb = new StringBuilder();

@@ -5,11 +5,21 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * A class for parsing JSON as JSON Object
+ * @author Ryorda Triaptahadi
+ *         A class for parsing a JSON Object
  */
 public class OdaJSONObject {
+    /**
+     * @var values key-value pair of this JSON Object
+     */
     Map<String, String> values;
 
+    /**
+     * Constructor
+     *
+     * @param json String in JSON format
+     * @throws Exception If there are some fatal mistakes: not a JSON Object, invalid JSON format
+     */
     public OdaJSONObject(String json) throws Exception {
         values = new HashMap<>();
         json = json.trim();
@@ -51,6 +61,11 @@ public class OdaJSONObject {
         saveData(json.substring(pos));
     }
 
+    /**
+     * A method for parsing the given become key and value which will be saved in the map
+     *
+     * @param json
+     */
     private void saveData(String json) {
         int idx = json.indexOf(':');
         String key = json.substring(0, idx).trim();

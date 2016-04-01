@@ -3,7 +3,8 @@ package triaptahadi.ryorda.weathermonitoring.Model;
 import java.util.StringTokenizer;
 
 /**
- * Created by ryord on 3/30/2016.
+ * @author Ryorda Triaptahadi
+ *         A class define a date
  */
 public class OdaDate {
     private int date, month, year;

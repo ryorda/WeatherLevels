@@ -3,12 +3,19 @@ package triaptahadi.ryorda.weathermonitoring.Model;
 import java.util.Stack;
 
 /**
- * Created by ryord on 3/30/2016.
+ * @author Ryorda Triaptahadi
+ *         A class for parsing a JSON Array
  */
 public class OdaJSONArray {
     final int MAX_VAL = 1_000_000;
     String[] values;
 
+    /**
+     * Constructor
+     *
+     * @param json String in JSON format
+     * @throws Exception If there are some fatal mistakes: not a JSON Array, invalid JSON format
+     */
     public OdaJSONArray(String json) throws Exception {
 
         values = new String[MAX_VAL];
