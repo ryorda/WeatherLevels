@@ -27,7 +27,7 @@ public class WeatherAPI {
     private final String keyApi = "93792bfdeac147eab2835650163003";
     private final String cities[] = {
             "Jakarta", "London", "Singapore", "Kuala Lumpur", "Bandung",
-            "Johor", "Depok", "Jogjakarta", "Pontianak", "Palu",
+            "Johor", "Depok", "Yogyakarta", "Pontianak", "Palu",
             "Manhattan", "Bangkok", "Taipei", "Manila", "Beijing",
             "Washington", "New York", "Manchester", "Liverpool", "Dublin",
             "Barcelona", "Sydney", "Hong Kong", "Padang", "Berlin",
