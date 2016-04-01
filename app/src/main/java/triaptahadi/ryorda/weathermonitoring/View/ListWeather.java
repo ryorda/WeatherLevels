@@ -76,7 +76,7 @@ public class ListWeather extends AppCompatActivity {
         Thread listThread = new Thread() {
             public void run() {
                 try {
-                    WeatherAPI weatherAPI = new WeatherAPI("JAKARTA");
+                    WeatherAPI weatherAPI = new WeatherAPI("Jakarta");
                     listWeather = weatherAPI.getAllCitiesData();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -116,7 +116,7 @@ public class ListWeather extends AppCompatActivity {
                         findViewById(R.id.list_progressbar).setVisibility(View.GONE);
                         findViewById(R.id.black_cover).setVisibility(View.GONE);
                         findViewById(R.id.list_weather).setVisibility(View.VISIBLE);
-
+                        onWindowFocusChanged(true);
                     }
                 });
 
@@ -149,14 +149,21 @@ public class ListWeather extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         if (!isConfigured) {
-            isConfigured = true;
+            try {
+                Point screen = new Point();
+                getWindowManager().getDefaultDisplay().getSize(screen);
 
-            int toolHeight = findViewById(R.id.toolbar).getHeight();
-            Point screen = new Point();
-            getWindowManager().getDefaultDisplay().getSize(screen);
+                ListView listView = (ListView) findViewById(R.id.list_weather);
+                listView.getLayoutParams().width = screen.x;
 
-            findViewById(R.id.list_weather).getLayoutParams().width = screen.x;
-            findViewById(R.id.list_weather).getLayoutParams().height *= 33;
+                View item = listView.getAdapter().getView(0, null, listView);
+                item.measure(0, 0);
+
+                listView.getLayoutParams().height = 33 * (item.getMeasuredHeight() + listView.getDividerHeight());
+                isConfigured = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

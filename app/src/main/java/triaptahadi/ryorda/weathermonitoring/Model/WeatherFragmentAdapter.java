@@ -35,13 +35,13 @@ public class WeatherFragmentAdapter extends ArrayAdapter<CurrentData> {
         super(c, android.R.layout.simple_list_item_1, list);
         this.c = c;
         currentDatas = list;
-        pref = c.getSharedPreferences("IMAGES_PATH", c.MODE_PRIVATE);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         final CurrentData item = currentDatas.get(position);
+        pref = c.getSharedPreferences("IMAGES_PATH", c.MODE_PRIVATE);
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext()

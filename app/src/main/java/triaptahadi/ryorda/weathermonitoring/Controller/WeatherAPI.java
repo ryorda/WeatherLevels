@@ -19,7 +19,7 @@ public class WeatherAPI {
     private final String baseUrl = "https://api.worldweatheronline.com/premium/v1/weather.ashx";
     private final String keyApi = "93792bfdeac147eab2835650163003";
     private final String cities[] = {
-            "Jakarta", "London", "Singapore", "Kuala Lumpur", "Bandung"
+            "Jakarta", "London"
     };
     //    private final String cities[] = {
 //            "Jakarta", "London", "Singapore", "Kuala Lumpur", "Bandung",
@@ -142,7 +142,8 @@ public class WeatherAPI {
                 internetThread.interrupt();
             }
 
-            data.add(currentData);
+            for (int j = 0; j < 17; j++)
+                data.add(currentData);
         }
         currentData = temp;
 
